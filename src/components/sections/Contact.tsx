@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, MapPin, Send } from 'lucide-react';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -8,20 +8,47 @@ const Contact: React.FC = () => {
     company: '',
     message: '',
   });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Form submission logic would go here
-    console.log('Form submitted:', formData);
-    // Reset form
-    setFormData({ name: '', email: '', company: '', message: '' });
-    // Show success message
-    alert('Thanks for reaching out! We will get back to you soon.');
+    setIsSubmitting(true);
+    
+    try {
+      // 使用 Formspree 发送表单数据
+      const response = await fetch('https://formspree.io/f/xovwjdew', { // 替换为您的表单 ID
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          _replyto: formData.email,
+          _subject: `Contact from ${formData.name}`,
+        }),
+      });
+      
+      if (response.ok) {
+        // 重置表单
+        setFormData({ name: '', email: '', company: '', message: '' });
+        setSubmitSuccess(true);
+        setTimeout(() => setSubmitSuccess(false), 5000); // 5秒后隐藏成功消息
+      } else {
+        throw new Error('提交失败');
+      }
+    } catch (error) {
+      console.error('表单提交错误:', error);
+      alert('提交失败，请稍后再试或直接发送邮件至 jacard.hust@gmail.com');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -45,19 +72,13 @@ const Contact: React.FC = () => {
               </p>
               
               <div className="space-y-6">
-                <div className="flex items-start">
-                  <Phone className="h-6 w-6 mr-4 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium">Call Us</p>
-                    <p className="opacity-90 mt-1">+1 (555) 123-4567</p>
-                  </div>
-                </div>
+                {/* 移除 Call Us 部分 */}
                 
                 <div className="flex items-start">
                   <Mail className="h-6 w-6 mr-4 flex-shrink-0" />
                   <div>
                     <p className="font-medium">Email Us</p>
-                    <p className="opacity-90 mt-1">info@travelmindai.com</p>
+                    <p className="opacity-90 mt-1">jacard.hust@gmail.com</p>
                   </div>
                 </div>
                 
@@ -76,7 +97,7 @@ const Contact: React.FC = () => {
               <div className="mt-12">
                 <p className="font-medium mb-4">Connect With Us</p>
                 <div className="flex space-x-4">
-                  <a href="#" className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center hover:bg-primary-500 transition-colors">
+                  <a href="https://x.com/JacardL" className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center hover:bg-primary-500 transition-colors">
                     <span className="sr-only">Twitter</span>
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
@@ -94,6 +115,12 @@ const Contact: React.FC = () => {
             
             <div className="md:w-3/5 p-8 md:p-12">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a message</h3>
+              
+              {submitSuccess && (
+                <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg">
+                  感谢您的留言！我们会尽快回复您。
+                </div>
+              )}
               
               <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
@@ -163,9 +190,10 @@ const Contact: React.FC = () => {
                 
                 <button
                   type="submit"
-                  className="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                  disabled={isSubmitting}
+                  className={`inline-flex items-center px-6 py-3 ${isSubmitting ? 'bg-gray-400' : 'bg-primary-600 hover:bg-primary-700'} text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors`}
                 >
-                  Send Message
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                   <Send className="ml-2 h-4 w-4" />
                 </button>
               </form>

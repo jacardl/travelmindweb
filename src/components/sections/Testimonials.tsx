@@ -39,6 +39,33 @@ const Testimonials: React.FC = () => {
       quote: "The AI-generated content perfectly captures the essence of our luxury properties. The platform's ability to maintain our brand voice while optimizing for conversions is impressive.",
       image: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
       rating: 4
+    },
+    {
+      id: 4,
+      name: "David Thompson",
+      position: "Tourism Bureau Director",
+      company: "Barcelona City Tourism Office",
+      quote: "TravelMind AI has revolutionized our city's digital presence. We can now create authentic, culturally nuanced content that resonates with visitors from around the world. Our tourism engagement metrics have increased by 60% year-over-year.",
+      image: "https://images.pexels.com/photos/5792641/pexels-photo-5792641.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      rating: 5
+    },
+    {
+      id: 5,
+      name: "Sophia Martinez",
+      position: "Travel Influencer",
+      company: "@wanderlust_sophia (2.4M followers)",
+      quote: "As someone who creates travel content daily, TravelMind AI has been a game-changer. It helps me craft authentic stories about destinations while maintaining my unique voice. My engagement rate has grown by 35% and I've secured three major brand partnerships thanks to the quality of content.",
+      image: "https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      rating: 5
+    },
+    {
+      id: 6,
+      name: "James Wilson",
+      position: "Operations Director",
+      company: "Grand Canyon National Park Visitor Center",
+      quote: "TravelMind AI has transformed how we communicate with our 6 million annual visitors. We now deliver personalized content based on visitor interests, season, and even weather conditions. The platform has helped us increase visitor satisfaction scores by 28% and boost gift shop sales by 15%.",
+      image: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      rating: 4
     }
   ];
 
@@ -53,7 +80,7 @@ const Testimonials: React.FC = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-primary-50 to-secondary-50">
+    <section id="testimonials" className="py-20 bg-gradient-to-br from-primary-50 to-secondary-50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
