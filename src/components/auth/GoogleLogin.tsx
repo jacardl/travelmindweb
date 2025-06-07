@@ -13,7 +13,7 @@ const GoogleLogin: React.FC<GoogleLoginProps> = ({ onSuccess, onError }) => {
     // 检查 Google Identity Services 是否已加载
     const initializeGoogleSignIn = () => {
       if (window.google && window.google.accounts) {
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.REACT_APP_GOOGLE_CLIENT_ID;
         
         if (!clientId) {
           console.error('Google Client ID not found in environment variables');
