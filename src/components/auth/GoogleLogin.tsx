@@ -14,7 +14,7 @@ const GoogleLogin: React.FC<GoogleLoginProps> = ({ onSuccess, onError }) => {
     const initializeGoogleSignIn = () => {
       if (window.google && window.google.accounts) {
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.REACT_APP_GOOGLE_CLIENT_ID;
-        
+
         if (!clientId) {
           console.error('Google Client ID not found in environment variables');
           onError?.(new Error('Google Client ID not configured'));
