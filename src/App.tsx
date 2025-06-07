@@ -25,7 +25,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-gray-900">
-      <Navbar onShowAuthModal={() => setShowAuthModal(true)} />
+      <Navbar />
       <Routes>
         <Route path="/" element={
           <>

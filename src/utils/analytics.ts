@@ -1,11 +1,12 @@
-// 声明 gtag 函数类型
+// 修复gtag函数的类型定义
 declare global {
   interface Window {
-    gtag: (
-      command: 'config' | 'event' | 'js' | 'set',
-      targetId: string | Date,
-      config?: any
-    ) => void;
+    gtag: {
+      (command: 'config', targetId: string, config?: any): void;
+      (command: 'event', eventName: string, config?: any): void;
+      (command: 'js', date: Date): void;
+      (command: 'set', config: any): void;
+    };
     dataLayer: any[];
   }
 }
@@ -19,10 +20,63 @@ class GoogleAnalytics {
     this.init();
   }
 
-  private init() {
-    if (typeof window !== 'undefined' && window.gtag) {
-      this.isInitialized = true;
+  private async init() {
+    // 只在生产环境或有有效测量ID时初始化
+    if (typeof window === 'undefined' || 
+        !this.measurementId || 
+        this.measurementId === 'GA_MEASUREMENT_ID' ||
+        this.measurementId.includes('localhost')) {
+      console.log('Google Analytics: 跳过初始化（开发环境或无效配置）');
+      return;
     }
+
+    try {
+      // 动态加载Google Analytics脚本
+      await this.loadGoogleAnalytics();
+      this.isInitialized = true;
+      console.log('Google Analytics: 初始化成功');
+    } catch (error) {
+      console.warn('Google Analytics: 初始化失败', error);
+    }
+  }
+
+  private loadGoogleAnalytics(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // 检查是否已经加载
+      if (typeof window.gtag === 'function') {
+        resolve();
+        return;
+      }
+
+      // 初始化dataLayer
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function() {
+        window.dataLayer.push(arguments);
+      } as any;
+
+      // 创建脚本元素
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${this.measurementId}`;
+      
+      script.onload = () => {
+        window.gtag('js', new Date());
+        window.gtag('config', this.measurementId, {
+          page_title: document.title,
+          page_location: window.location.href,
+          // 禁用广告功能
+          allow_google_signals: false,
+          allow_ad_personalization_signals: false
+        });
+        resolve();
+      };
+      
+      script.onerror = () => {
+        reject(new Error('Failed to load Google Analytics script'));
+      };
+      
+      document.head.appendChild(script);
+    });
   }
 
   // 页面浏览追踪
@@ -100,7 +154,10 @@ class GoogleAnalytics {
 
   // 设置用户属性
   setUserProperties(properties: Record<string, any>) {
-    if (!this.isInitialized) return;
+    if (!this.isInitialized) {
+      console.log('Google Analytics: 未初始化，跳过设置用户属性');
+      return;
+    }
     
     window.gtag('set', {
       user_properties: properties
@@ -118,7 +175,7 @@ class GoogleAnalytics {
 }
 
 // 创建单例实例
-const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID || 'GA_MEASUREMENT_ID';
+const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID || '';
 export const analytics = new GoogleAnalytics(measurementId);
 
 // 导出便捷方法
@@ -130,3 +187,6 @@ export const trackButtonClick = (buttonName: string, section?: string) => analyt
 export const trackDownload = (fileName: string, fileType?: string) => analytics.download(fileName, fileType);
 export const trackSearch = (searchTerm: string) => analytics.search(searchTerm);
 export const trackConversion = (conversionName: string, value?: number) => analytics.conversion(conversionName, value);
+
+// 检查analytics.ts文件，确保配置正确
+// 避免启用广告相关的功能
