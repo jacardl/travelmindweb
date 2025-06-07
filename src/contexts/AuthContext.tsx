@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { analytics } from '../utils/analytics';
 
 interface User {
   id: string;
@@ -46,6 +47,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = (userData: User) => {
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    
+    // 追踪登录事件
+    analytics.login(userData.provider);
+    
+    // 设置用户 ID
+    analytics.setUserId(userData.id);
+    
+    // 设置用户属性
+    analytics.setUserProperties({
+      user_type: 'authenticated',
+      login_method: userData.provider
+    });
   };
 
   const logout = () => {

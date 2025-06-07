@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { trackButtonClick } from '../../utils/analytics';
 
 interface ButtonProps {
   children: React.ReactNode;
@@ -8,6 +9,8 @@ interface ButtonProps {
   href?: string;
   onClick?: () => void;
   className?: string;
+  trackingName?: string; // 新增追踪名称
+  trackingSection?: string; // 新增追踪区域
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -17,7 +20,18 @@ const Button: React.FC<ButtonProps> = ({
   href,
   onClick,
   className = '',
+  trackingName,
+  trackingSection
 }) => {
+  const handleClick = () => {
+    // 追踪按钮点击
+    if (trackingName) {
+      trackButtonClick(trackingName, trackingSection);
+    }
+    
+    // 执行原有点击事件
+    onClick?.();
+  };
   const baseClasses = 'inline-flex items-center justify-center rounded-full font-medium transition-all';
   
   const variantClasses = {
@@ -38,27 +52,27 @@ const Button: React.FC<ButtonProps> = ({
   
   if (href) {
     return (
-      <Component
-        as="a"
+      <motion.a
         href={href}
-        className={classes}
+        className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+        onClick={handleClick}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
         {children}
-      </Component>
+      </motion.a>
     );
   }
-  
+
   return (
-    <Component
-      onClick={onClick}
-      className={classes}
+    <motion.button
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      onClick={handleClick}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
       {children}
-    </Component>
+    </motion.button>
   );
 };
 
