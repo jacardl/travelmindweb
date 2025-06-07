@@ -6,18 +6,20 @@ import Features from '../components/sections/Features';
 import Solutions from '../components/sections/Solutions';
 import Demo from '../components/sections/Demo';
 import Testimonials from '../components/sections/Testimonials';
-// 移除 Pricing 导入
 import Contact from '../components/sections/Contact';
 
-const Home: React.FC = () => {
+interface HomeProps {
+  onShowAuthModal?: () => void;
+}
+
+const Home: React.FC<HomeProps> = ({ onShowAuthModal }) => {
   return (
     <>
       <Hero />
       <Features />
       <Solutions />
-      <Demo />
+      <Demo onShowAuthModal={onShowAuthModal} />
       <Testimonials />
-      {/* 移除 Pricing 组件 */}
       <Contact />
     </>
   );

@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, MapPin, Send } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Contact: React.FC = () => {
+  const { isAuthenticated, user } = useAuth();
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,6 +14,24 @@ const Contact: React.FC = () => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // 当用户登录状态改变时，自动填写用户信息
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.name || '',
+        email: user.email || '',
+      }));
+    } else {
+      // 如果用户登出，清空自动填写的信息
+      setFormData(prev => ({
+        ...prev,
+        name: '',
+        email: '',
+      }));
+    }
+  }, [isAuthenticated, user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
