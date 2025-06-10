@@ -15,7 +15,7 @@ const Demo: React.FC<DemoProps> = ({ onShowAuthModal }) => {
   const handleDownload = () => {
     if (isAuthenticated) {
       // 已登录，直接下载
-      window.open('https://github.com/jacardl/TMdownload/releases/download/travelmind/Travelmind.ai-beta.0.0.2-arm64.dmg', '_blank');
+      window.open('https://github.com/jacardl/travelmindweb/releases/download/travelmind/Travelmind.ai-beta.0.0.2-arm64.dmg', '_blank');
     } else {
       // 未登录，显示登录模态框
       if (onShowAuthModal) {
